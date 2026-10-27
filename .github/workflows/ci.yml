@@ -1,0 +1,41 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run the assertion suite
+        run: python eval.py
+      - name: Tamper-evident ledger assertions
+        run: python eval_chain.py
+      - name: Escape corpus must hold
+        run: python -m swarmbox gate
+      - name: Planted collusion pair must be detected
+        run: python -m swarmbox probe
+      - name: Cheap vs frontier
+        run: python -m swarmbox fidelity
+
+  # Chinese Windows defaults to cp936 and a single unencodable character
+  # turns a clean run into a traceback. Verify we survive it.
+  hostile-locale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Run under LC_ALL=C with PYTHONUTF8 unset
+        run: env -u PYTHONUTF8 LC_ALL=C python eval.py
