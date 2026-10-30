@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SwarmBox — Swarm Alignment 2026 · Track 1</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --line:#30363d;
+    --fg:#e6edf3; --dim:#8b949e; --acc:#58a6ff;
+    --ok:#3fb950; --warn:#d29922; --bad:#f85149;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    width:1920px;height:1080px;background:var(--bg);color:var(--fg);
+    font-family:"Segoe UI","Microsoft YaHei",Arial,sans-serif;
+    display:flex;flex-direction:column;padding:48px 80px 36px;
+  }
+  .tag{
+    display:inline-block;align-self:flex-start;font-size:20px;letter-spacing:.14em;
+    color:var(--acc);border:1px solid var(--acc);border-radius:999px;
+    padding:8px 22px;margin-bottom:30px;
+  }
+  h1{font-size:92px;font-weight:700;letter-spacing:-.02em;line-height:1}
+  h1 span{color:var(--acc)}
+  .sub{font-size:30px;color:var(--dim);margin-top:20px;font-weight:300}
+  .rule{height:2px;background:var(--line);margin:26px 0 24px}
+  .cols{display:flex;gap:34px;flex:1}
+  .col{flex:1;display:flex;flex-direction:column}
+  .term{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px 20px;font-family:Consolas,"Courier New",monospace;
+    font-size:17px;line-height:1.5;flex:1;overflow:hidden;
+  }
+  .term .hd{
+    color:var(--dim);font-size:16px;letter-spacing:.1em;
+    margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line);
+  }
+  .term .cmd{color:var(--acc)}
+  .k{color:var(--dim)}
+  .v{color:var(--fg)}
+  .ok{color:var(--ok);font-weight:600}
+  .bad{color:var(--bad);font-weight:600}
+  .warn{color:var(--warn)}
+  .kpi{display:flex;gap:26px;margin-bottom:22px}
+  .kpi div{
+    flex:1;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:22px;text-align:center;
+  }
+  .kpi .n{font-size:52px;font-weight:700;color:var(--ok);line-height:1.1}
+  .kpi .n.b{color:var(--acc)}
+  .kpi .l{font-size:17px;color:var(--dim);margin-top:8px}
+  .foot{
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:17px;color:var(--dim);padding-top:26px;border-top:1px solid var(--line);
+  }
+  .foot b{color:var(--fg);font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="tag">SWARM ALIGNMENT HACKATHON 2026 · TRACK 1 — SANDBOXES &amp; TESTBEDS</div>
+
+<h1>Swarm<span>Box</span></h1>
+<div class="sub">A non-escapable, reproducible multi-agent testbed — the agents cannot get out, and we can show you the proof.</div>
+
+<div class="rule"></div>
+
+<div class="kpi">
+  <div><div class="n">235</div><div class="l">assertions passed · 0 failed</div></div>
+  <div><div class="n">0</div><div class="l">escape successes (32-item corpus)</div></div>
+  <div><div class="n">0</div><div class="l">invariant violations</div></div>
+  <div><div class="n b">−0.831</div><div class="l">planted collusion pair correlation</div></div>
+</div>
+
+<div class="cols">
+  <div class="col">
+    <div class="term">
+      <div class="hd">ESCAPE CORPUS — 攻击语料逐条被拒</div>
+      <div><span class="cmd">$ python -m swarmbox gate</span></div>
+      <div><span class="k">escape corpus    </span><span class="v">32 items, 31 refused with the expected rule</span></div>
+      <div><span class="k">escape successes </span><span class="ok">0</span></div>
+      <div style="margin-top:18px"></div>
+      <div><span class="cmd">$ python -m swarmbox run</span></div>
+      <div><span class="k">agents / rounds  </span><span class="v">12 / 24   (seed 7)</span></div>
+      <div><span class="k">gini holdings    </span><span class="v">0.2819</span></div>
+      <div><span class="k">collapse round   </span><span class="v">7</span></div>
+      <div><span class="k">escape attempts  </span><span class="v">249  refused 0  applied 249  </span><span class="ok">SUCCESSES 0</span></div>
+      <div><span class="k">covert channel   </span><span class="v">11 writes / 11 reads / 10 cross-agent reads</span></div>
+      <div><span class="k">collusion pair   </span><span class="v">agent_07 &lt;-&gt; agent_08  corr </span><span class="warn">-0.831</span></div>
+      <div><span class="k">invariants       </span><span class="ok">0 violation(s)</span></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="term">
+      <div class="hd">WHY IT CANNOT BE ESCAPED — 三层围堵</div>
+      <div style="margin-bottom:14px"><span class="k">结构层 </span><span class="v">fs / net / proc / import / reflect 不在语法里，无法被请求</span></div>
+      <div style="margin-bottom:14px"><span class="k">Schema 层 </span><span class="v">严格字段 + 禁未知字段 → 夹带、类型混淆、冒充</span></div>
+      <div style="margin-bottom:20px"><span class="k">状态层 </span><span class="v">对照世界校验 → 超额索取 / 释放 / 保留命名空间</span></div>
+      <div class="hd" style="margin-top:6px">REPRODUCIBILITY — 一次运行是配置的纯函数</div>
+      <div><span class="v">相同输入 → 账本摘要逐字节相同</span></div>
+      <div><span class="v">只追加 JSONL；</span><span class="ok">拒绝是一等记录</span></div>
+      <div style="margin-top:18px"></div>
+      <div><span class="cmd">$ python -m swarmbox fidelity</span></div>
+      <div><span class="k">collapse_rate    </span><span class="v">1.0000</span></div>
+      <div><span class="k">drift            </span><span class="v">68.2031</span></div>
+      <div><span class="k">gini             </span><span class="v">0.1649</span></div>
+      <div><span class="k">escape successes </span><span class="ok">0   </span><span class="k">invariant violations </span><span class="ok">0</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  <div><b>Python 3.9+</b> · 零第三方依赖 · 零网络 · <b>git clone &amp;&amp; python eval.py</b></div>
+  <div>MIT · <b>github.com/Zhiyilang/swarmbox</b> · gitee.com/Zhiyilang/swarmbox</div>
+</div>
+
+</body>
+</html>
