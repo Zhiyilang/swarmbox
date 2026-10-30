@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>项目申报表 - SwarmBox</title>
+<style>
+  @page { size: A4 portrait; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+         background: #eef1f6; color: #16181d; }
+  .page { width: 210mm; min-height: 297mm; padding: 20mm 22mm;
+          background: #fff; page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+  h1 { font-size: 26px; text-align: center; letter-spacing: 2px;
+       margin-bottom: 6px; }
+  .sub { text-align: center; font-size: 13px; color: #5a6270; margin-bottom: 16px; }
+  .rule { height: 2px; background: #16181d; margin-bottom: 18px; }
+  h2 { font-size: 16px; margin: 16px 0 8px; padding-left: 9px;
+       border-left: 4px solid #16181d; }
+  h2:first-of-type { margin-top: 0; }
+  p { font-size: 12.5px; line-height: 1.85; margin-bottom: 8px;
+      text-align: justify; }
+  ul { padding-left: 20px; margin-bottom: 8px; }
+  li { font-size: 12.5px; line-height: 1.85; margin-bottom: 5px;
+       text-align: justify; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px;
+          margin-bottom: 10px; }
+  th, td { border: 1px solid #b9c0cc; padding: 6px 9px; text-align: left;
+           line-height: 1.6; vertical-align: top; }
+  th { background: #f2f4f8; font-weight: 600; width: 30%; }
+  td.num { font-family: Consolas, monospace; }
+  .mono { font-family: Consolas, "Courier New", monospace; font-size: 12px; }
+  .hl { font-weight: 700; }
+  .foot { position: relative; margin-top: 18px; border-top: 1px solid #dde2ea;
+          padding-top: 7px; font-size: 10.5px; color: #8b93a1;
+          display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<section class="page">
+  <h1>项目申报表</h1>
+  <div class="sub">青年开源专项基金种子计划 · 第二批</div>
+  <div class="rule"></div>
+
+  <h2>一、项目基本情况</h2>
+  <table>
+    <tr><th>项目名称</th><td>SwarmBox（多智能体不可逃逸测试床）</td></tr>
+    <tr><th>项目地址</th><td class="mono">https://github.com/Zhiyilang/swarmbox</td></tr>
+    <tr><th>国内镜像</th><td class="mono">https://gitee.com/Zhiyilang/swarmbox</td></tr>
+    <tr><th>开源许可证</th><td><span class="hl">MIT</span>（OSI 认可的开源许可）</td></tr>
+    <tr><th>所属方向</th><td>AI Agent 基础设施 / AI Infra</td></tr>
+    <tr><th>开发语言</th><td>Python 3.9+</td></tr>
+    <tr><th>第三方依赖</th><td><span class="hl">无</span>（纯标准库），零网络访问</td></tr>
+    <tr><th>项目联系人</th><td>支一郎（独立开发者，唯一维护者）</td></tr>
+    <tr><th>当前规模</th><td>11 个核心模块 + 235 条自动化断言</td></tr>
+  </table>
+
+  <h2>二、项目简介</h2>
+  <p>SwarmBox 是一个<span class="hl">不可逃逸、可复跑的多智能体测试床</span>，为 AI Agent 的安全与对齐研究而设计。</p>
+  <p>它最根本的设计选择是：<span class="hl">不解释执行智能体的输出，而是把输出当作纯数据来解析</span>。因此文件、网络、进程、import、反射等逃逸手段根本不在语法里——不是"被禁止"，而是"无从调用"。这使"不可逃逸"成为一个结构性事实，而不是一份需要不断维护的禁止清单。</p>
+  <p>每次提案都要经过三重校验：结构（<span class="mono">check_shape</span>）、身份（<span class="mono">check_identity</span>）、状态（<span class="mono">check_state</span>）；任一不过即被闸门 <span class="mono">screen()</span> 拒绝，并写入只追加账本（append-only ledger）。因此"从未发生逃逸"是可审计的历史记录，而非一句需要被相信的承诺。</p>
+  <p>项目内置公共资源池经济，可观测 5–20 个智能体在共享资源下是协作、合谋还是耗尽资源。复现成本极低：<span class="mono">git clone &amp;&amp; python eval.py</span>，离线运行 235 条断言，0 失败。</p>
+
+  <h2>三、要解决的问题</h2>
+  <p>多智能体系统正从实验室走向生产环境。一旦给一群智能体授予工具与共享资源，风险就从"单个模型会不会乱说"升级为"一群智能体会不会合谋、逃逸、耗尽资源"——而这在上线前几乎无法系统性检验。当前存在三个具体缺口：</p>
+  <ul>
+    <li><span class="hl">逃逸风险无法预检</span>：智能体被授予工具权限后，文件 / 网络 / 进程等逃逸路径难以穷举验证。</li>
+    <li><span class="hl">禁止清单式沙箱易被绕过</span>：靠"不许调用 X"实现的隔离总会有遗漏，且无法证明已穷尽。</li>
+    <li><span class="hl">群体行为缺乏实验环境</span>：合谋、资源耗尽等现象缺少可复现、可量化的观测平台。</li>
+  </ul>
+  <p>SwarmBox 把这三个问题各自落地为可运行、可断言的代码，而不是停留在方案描述层面。</p>
+
+  <div class="foot"><span>SwarmBox · 项目申报表</span><span>联系人：支一郎</span></div>
+</section>
+
+<section class="page">
+  <h2>四、技术方案</h2>
+  <table>
+    <tr><th>世界模型 <span class="mono">world.py</span></th><td><span class="mono">class World</span> 维护公共资源池与系统不变量，违反时抛 <span class="mono">InvariantError</span></td></tr>
+    <tr><th>闸门 <span class="mono">gate.py</span></th><td><span class="mono">screen()</span> 串联 <span class="mono">check_shape()</span> / <span class="mono">check_identity()</span> / <span class="mono">check_state()</span> 三重校验</td></tr>
+    <tr><th>账本 <span class="mono">ledger.py</span></th><td><span class="mono">class Ledger</span> 只追加记录全部被拒提案，支持 <span class="mono">read_ledger()</span> 回放</td></tr>
+    <tr><th>攻击语料 <span class="mono">probe.py</span></th><td>32 条逃逸尝试，用于验证不可逃逸性</td></tr>
+    <tr><th>保真度 <span class="mono">fidelity.py</span></th><td><span class="mono">aggregate()</span> / <span class="mono">compare()</span> 支持多规模多轮次消融实验</td></tr>
+    <tr><th>其余模块</th><td><span class="mono">agents.py</span>（智能体）、<span class="mono">swarm.py</span>（群体调度）、<span class="mono">metrics.py</span>（指标）、<span class="mono">chain.py</span>（链式实验）</td></tr>
+  </table>
+  <p><span class="hl">关键实现要点</span>：智能体输出全程作为数据结构处理，从不进入任何执行或求值路径；所有阈值与规则属于世界配置，<span class="hl">不由提案内容决定</span>，因此智能体无法用输出影响自身约束。</p>
+
+  <h2>五、创新点</h2>
+  <ul>
+    <li><span class="hl">不解释执行，只作数据解析</span>——逃逸手段不在语法里，攻击面不存在，而非被封堵。</li>
+    <li><span class="hl">三重校验层层收窄</span>——结构、身份、状态三层各自独立，任一不过即拒绝。</li>
+    <li><span class="hl">可审计而非需信任</span>——只追加账本使安全性成为可核对的历史记录。</li>
+    <li><span class="hl">群体行为可量化</span>——合谋相关系数、collapse_rate、gini 等指标把"群体是否合谋"变成可计算的量。</li>
+    <li><span class="hl">零依赖零网络</span>——纯 Python 标准库，任何环境一次命令即可完整复现。</li>
+  </ul>
+
+  <h2>六、实测佐证（本机实跑，可复现）</h2>
+  <table>
+    <tr><th>命令</th><th>实测结果</th></tr>
+    <tr><td class="mono">python eval.py</td><td class="num"><span class="hl">235 passed, 0 failed</span></td></tr>
+    <tr><td class="mono">python -m swarmbox gate</td><td class="num">32 条攻击语料，31 条命中预期规则 ID，<span class="hl">escape successes 0</span></td></tr>
+    <tr><td class="mono">python -m swarmbox run</td><td class="num">invariants <span class="hl">0 violations</span>；collusion corr −0.831；covert channel 10 cross-agent reads</td></tr>
+    <tr><td class="mono">python -m swarmbox fidelity</td><td class="num">collapse_rate 1.0000；gini 0.1649；escape 0；violations 0</td></tr>
+  </table>
+
+  <h2>七、开源与社区情况</h2>
+  <ul>
+    <li>GitHub、Gitee <span class="hl">双平台公开</span>，MIT 许可，任何人可自由使用、修改、分发。</li>
+    <li>提供中英双语 README，附 REPORT.pdf 技术报告与 79 秒演示视频（由真实命令输出自动生成）。</li>
+    <li>零依赖设计使贡献者无需配置任何环境即可参与，<span class="mono">git clone</span> 后一条命令验证。</li>
+  </ul>
+
+  <h2>八、后续发展计划</h2>
+  <ul>
+    <li><span class="hl">扩展逃逸语料库</span>：从 32 条扩展到 100+ 条，覆盖同形字、归一化绕过、结构膨胀等新型手法。</li>
+    <li><span class="hl">增加资源策略维度</span>：引入配额、优先级、惩罚机制，观察更丰富的群体动力学。</li>
+    <li><span class="hl">可视化回放工具</span>：把只追加账本渲染成时间轴，直观呈现"谁在何时试图逃逸、命中哪条规则"。</li>
+    <li><span class="hl">对齐实验基线</span>：发布标准对照实验配置，供其他研究者做可比较的合谋 / 资源耗尽研究。</li>
+    <li><span class="hl">文档与教程</span>：补充中文教程，降低 AI 安全研究者与本专科学生的上手门槛。</li>
+  </ul>
+
+  <h2>九、维护者情况</h2>
+  <p>独立开发者，具备 Python 工程与自动化（RPA）开发经验，可独立持续维护本项目。项目采用零第三方依赖设计，长期维护成本低，不存在因上游依赖弃坑而导致的不可维护风险。</p>
+
+  <h2>十、资金用途（如获选）</h2>
+  <ul>
+    <li><span class="hl">服务器与测试资源</span>：用于大规模（20+ 智能体、长轮次）群体实验的算力。</li>
+    <li><span class="hl">文档与教程建设</span>：中文文档、教学示例、可视化工具。</li>
+    <li><span class="hl">社区运营</span>：逃逸语料库众包维护与评审。</li>
+  </ul>
+
+  <div class="foot"><span>SwarmBox · 项目申报表</span><span>联系人：支一郎</span></div>
+</section>
+
+</body>
+</html>
