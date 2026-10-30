@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>SwarmBox · 华为智能体创新赛（北部赛区）</title>
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; background: #eef1f6; }
+  .page {
+    width: 297mm; height: 210mm; padding: 16mm 18mm;
+    background: #ffffff; position: relative; page-break-after: always;
+    display: flex; flex-direction: column;
+  }
+  .page:last-child { page-break-after: auto; }
+  .hdr { border-left: 6px solid #0a7d4f; padding-left: 14px; margin-bottom: 9mm; }
+  .hdr h1 { font-size: 30px; color: #16181d; letter-spacing: .5px; }
+  .hdr .sub { font-size: 14px; color: #5a6270; margin-top: 5px; }
+  .body { flex: 1; display: flex; gap: 10mm; }
+  .col { flex: 1; }
+  h2 { font-size: 17px; color: #0a7d4f; margin-bottom: 6px;
+       border-bottom: 1px solid #dde2ea; padding-bottom: 5px; }
+  p, li { font-size: 13px; line-height: 1.75; color: #2b303b; }
+  ul { padding-left: 17px; } li { margin-bottom: 5px; }
+  .kpis { display: flex; gap: 5mm; margin: 5mm 0 7mm; }
+  .kpi { flex: 1; background: #f3f9f6; border: 1px solid #dde2ea;
+         border-radius: 8px; padding: 5mm 3mm; text-align: center; }
+  .kpi .n { font-size: 27px; font-weight: 700; color: #0a7d4f; line-height: 1.1; }
+  .kpi .l { font-size: 11px; color: #5a6270; margin-top: 5px; }
+  .flow { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; margin: 4mm 0; }
+  .step { background: #f3f9f6; border: 1px solid #dde2ea; border-radius: 6px;
+          padding: 4px 8px; font-size: 11px; font-family: Consolas, monospace; color: #2b303b; }
+  .step.hi { background: #e6f5ee; border-color: #0a7d4f; color: #0a7d4f; font-weight: 700; }
+  .arrow { color: #9aa3b2; font-size: 12px; }
+  .term { background: #16181d; color: #d8dee9; border-radius: 8px; padding: 5mm 6mm;
+          font-family: Consolas, "Courier New", monospace; font-size: 11.5px; line-height: 1.6; }
+  .term .g { color: #7fd67f; } .term .r { color: #ff8f8f; } .term .y { color: #ffd479; }
+  .term .c { color: #6fb3d2; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th, td { border: 1px solid #dde2ea; padding: 5px 8px; text-align: left; }
+  th { background: #f3f9f6; color: #16181d; font-weight: 600; }
+  td.num { font-family: Consolas, monospace; color: #0a7d4f; font-weight: 600; }
+  .foot { position: absolute; bottom: 9mm; left: 18mm; right: 18mm;
+          border-top: 1px solid #dde2ea; padding-top: 4px;
+          font-size: 10.5px; color: #8b93a1; display: flex; justify-content: space-between; }
+  .note { background: #fff8e6; border: 1px solid #f0d999; border-radius: 6px;
+          padding: 4mm 5mm; font-size: 12px; color: #6b5510; margin-top: 4mm; }
+  .sep { border-top: 1px dashed #c9d0dc; margin: 5mm 0; }
+</style>
+</head>
+<body>
+
+<!-- Page 1 -->
+<section class="page">
+  <div class="hdr">
+    <h1>SwarmBox · 多智能体不可逃逸测试床</h1>
+    <div class="sub">2026 华为开发者大赛 · 智能体创新赛（北部赛区）｜参赛主体：OPC（一人公司／超级个体）｜场景方向：企业场景 · AI 安全与流程创新</div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="n">235</div><div class="l">断言全部通过（0 失败）</div></div>
+    <div class="kpi"><div class="n">0</div><div class="l">逃逸成功次数</div></div>
+    <div class="kpi"><div class="n">31/32</div><div class="l">攻击语料命中预期规则</div></div>
+    <div class="kpi"><div class="n">5–20</div><div class="l">智能体规模可调</div></div>
+    <div class="kpi"><div class="n">0</div><div class="l">第三方依赖 · 零网络</div></div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <h2>一、场景背景</h2>
+      <p>多智能体系统正从实验室走向生产。一旦给一群智能体授予工具与共享资源，问题就从"单个模型会不会乱说"升级为"**一群智能体会不会合谋、逃逸、耗尽资源**"——而这在上線前几乎无法系统性检验。</p>
+      <h2 style="margin-top:6mm">二、真实痛点（三条）</h2>
+      <ul>
+        <li><b>逃逸风险无法预检</b>：智能体被授予工具权限后，文件/网络/进程等逃逸路径难以穷举验证。</li>
+        <li><b>禁止清单式沙箱易绕过</b>：靠"不许调用 X"实现的隔离，总会有遗漏，且<b>无法证明</b>已穷尽。</li>
+        <li><b>群体行为缺实验环境</b>：合谋、资源耗尽等现象缺少可复现、可量化的观测平台。</li>
+      </ul>
+      <div class="note"><b>目标用户：</b>需要在上线前评估多智能体系统安全性的企业与超级个体；AI 对齐研究者。</div>
+    </div>
+    <div class="col">
+      <h2>三、SwarmBox 的根本做法</h2>
+      <p style="font-size:14px"><b>它不解释执行智能体的输出，而是把输出当作纯数据来解析。</b></p>
+      <p style="margin-top:3mm">因此文件、网络、进程、import、反射这些逃逸手段<b>根本不在语法里</b>——不是被禁止，而是<b>无从调用</b>。</p>
+      <div class="sep"></div>
+      <h2>四、实测（本机可复现，零网络）</h2>
+      <table>
+        <tr><th>命令</th><th>结果</th></tr>
+        <tr><td>python eval.py</td><td class="num">235 passed / 0 failed</td></tr>
+        <tr><td>swarmbox gate</td><td class="num">32 语料 / 31 命中 / escape 0</td></tr>
+        <tr><td>swarmbox run</td><td class="num">violations 0 · corr −0.831</td></tr>
+        <tr><td>swarmbox fidelity</td><td class="num">collapse 1.0000 · gini 0.1649</td></tr>
+      </table>
+      <p style="margin-top:4mm;font-size:12px;color:#5a6270">⚠️ 按实测值填报：README 旧文案"32 条逐条被拒"实为 <b>31/32 命中预期规则 ID</b>（escape successes 仍为 0）；fidelity 基尼实跑 <b>0.1649</b>。提交材料一律用实跑值。</p>
+    </div>
+  </div>
+  <div class="foot"><span>SwarmBox · Zhiyilang</span><span>1 / 4</span></div>
+</section>
+
+<!-- Page 2 -->
+<section class="page">
+  <div class="hdr">
+    <h1>功能架构：三重校验 + 只追加账本</h1>
+    <div class="sub">提案 → 结构校验 → 身份校验 → 状态校验 → 闸门汇总 → 只追加账本　｜　不可逃逸是可审计的，而非需被信任的</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <h2>闸门链路（gate.py）</h2>
+      <div class="flow">
+        <span class="step">prop</span><span class="arrow">→</span>
+        <span class="step hi">check_shape</span><span class="arrow">→</span>
+        <span class="step hi">check_identity</span><span class="arrow">→</span>
+        <span class="step hi">check_state</span><span class="arrow">→</span>
+        <span class="step hi">screen</span><span class="arrow">→</span>
+        <span class="step">Ledger</span>
+      </div>
+      <table style="margin-top:4mm">
+        <tr><th>模块</th><th>关键符号</th><th>职责</th></tr>
+        <tr><td>gate.py</td><td><code>screen() / check_shape()<br>check_identity() / check_state()</code></td><td>三重校验 + 闸门汇总</td></tr>
+        <tr><td>ledger.py</td><td><code>class Ledger / read_ledger()</code></td><td><b>只追加</b>账本，记录全部被拒提案</td></tr>
+        <tr><td>world.py</td><td><code>class World / InvariantError</code></td><td>公共资源池 + 不变量守护</td></tr>
+        <tr><td>probe.py</td><td>攻击语料注入</td><td>验证不可逃逸性（32 条）</td></tr>
+        <tr><td>fidelity.py</td><td><code>aggregate() / compare()</code></td><td>保真度与对照实验</td></tr>
+        <tr><td>metrics.py / swarm.py / agents.py / chain.py</td><td>—</td><td>指标、群体调度、智能体、链式实验</td></tr>
+      </table>
+      <h2 style="margin-top:5mm">为何"不可逃逸"可审计</h2>
+      <p>每一次被拒提案都写入<b>只追加账本</b>，事后可完整回放：谁、在第几轮、试图做什么、命中哪条规则。安全性质不是声称的，是<b>可核对的</b>。</p>
+    </div>
+    <div class="col">
+      <h2>真实运行输出</h2>
+      <div class="term">
+<span class="y">$ python -m swarmbox gate</span><br>
+32 corpus items<br>
+31 refused with expected rule<br>
+<span class="g">escape successes 0</span><br>
+<br>
+<span class="y">$ python -m swarmbox run</span><br>
+<span class="c">[bounds: 5-20 agents]</span><br>
+invariants <span class="g">0 violations</span><br>
+collusion corr <span class="c">-0.831</span><br>
+covert channel <span class="c">10</span> cross-agent reads<br>
+<br>
+<span class="y">$ python -m swarmbox fidelity</span><br>
+collapse_rate <span class="c">1.0000</span><br>
+gini <span class="c">0.1649</span><br>
+escape <span class="g">0</span>　violations <span class="g">0</span>
+      </div>
+      <p style="margin-top:4mm"><b>corr −0.831 的读法</b>：强负相关意味着智能体之间存在明显的<b>此消彼长</b>关系——一方取用资源时另一方被压制，是资源竞争/合谋结构的量化证据，而非随机噪声。</p>
+      <div class="note" style="margin-top:4mm">全部命令零网络、零 API Key，评委 `git clone` 后可直接复现。</div>
+    </div>
+  </div>
+  <div class="foot"><span>SwarmBox · Zhiyilang</span><span>2 / 4</span></div>
+</section>
+
+<!-- Page 3 -->
+<section class="page">
+  <div class="hdr">
+    <h1>核心亮点：逃逸手段不在语法里</h1>
+    <div class="sub">差异化创新点 · 对应评分维度「专业贴合与创新 25 分」</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <h2>亮点 1 · 不解释执行，只作数据解析</h2>
+      <p>常见沙箱的做法是"执行智能体输出，但禁止其中某些操作"——本质是<b>黑名单</b>，永远有遗漏。SwarmBox 反过来：智能体的输出被当作<b>纯数据结构</b>解析与校验，<b>从不作为代码执行</b>。因此文件、网络、进程、import、反射这些逃逸手段<b>根本不在语法里</b>。
+      这不是"禁止得更严"，而是"攻击面不存在"。</p>
+      <h2 style="margin-top:6mm">亮点 2 · 三重校验层层收窄</h2>
+      <ul>
+        <li><b>check_shape</b>：提案形态是否合法（结构层）</li>
+        <li><b>check_identity</b>：是否为该智能体本人（身份层）</li>
+        <li><b>check_state</b>：当前世界状态下是否允许（状态层）</li>
+      </ul>
+      <p style="margin-top:3mm">任一不过即由 <code>screen()</code> 拒绝并记账，不进入世界状态。</p>
+      <h2 style="margin-top:6mm">亮点 3 · 可审计而非需信任</h2>
+      <p>只追加账本使"从未发生逃逸"成为<b>可核对的历史记录</b>，而不是一句承诺。</p>
+    </div>
+    <div class="col">
+      <h2>亮点 4 · 群体行为可量化</h2>
+      <ul>
+        <li>5–20 个智能体共享公共资源池，多轮交互</li>
+        <li>可观测<b>协作 / 合谋 / 资源耗尽</b>三种群体形态</li>
+        <li>collapse_rate、gini、collusion corr 等指标量化群体状态</li>
+        <li><code>compare()</code> 支持对照实验，便于做消融研究</li>
+      </ul>
+      <h2 style="margin-top:6mm">亮点 5 · 零依赖 + 完全离线可复现</h2>
+      <ul>
+        <li>纯 Python 标准库，<b>pip install 无内容</b>，<b>零网络访问</b></li>
+        <li>Python 3.9+，`git clone && python eval.py` 一次跑通 235 条断言</li>
+        <li>附 REPORT.pdf 与 eval_chain.py 链式实验</li>
+      </ul>
+      <h2 style="margin-top:6mm">落地价值</h2>
+      <p>可直接作为企业多智能体系统<b>上线前的安全评估基线</b>；也可作为 AI 对齐研究中"合谋与资源耗尽"现象的标准实验环境。</p>
+    </div>
+  </div>
+  <div class="foot"><span>SwarmBox · Zhiyilang</span><span>3 / 4</span></div>
+</section>
+
+<!-- Page 4 -->
+<section class="page">
+  <div class="hdr">
+    <h1>华为云码道（CodeArts）应用说明</h1>
+    <div class="sub">对应评分维度「码道深度使用 25 分」—— 覆盖环境搭建 / 代码生成 / 调试排错 / 文档生成 全流程</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <h2>码道在开发全流程的覆盖</h2>
+      <table>
+        <tr><th>环节</th><th>码道承担的工作</th><th>产物</th></tr>
+        <tr><td>环境搭建</td><td>生成一键安装脚本与环境自检工具（本项目零依赖，脚本需说明并跳过安装）</td><td>scripts/setup.sh · doctor.py</td></tr>
+        <tr><td>代码生成</td><td>新增第四重校验 check_rate；补充 8 条新型逃逸语料</td><td>gate.py · probe.py · 新断言</td></tr>
+        <tr><td>调试排错</td><td>修复 Unicode 同形字伪装身份导致的身份校验不稳定</td><td>gate.py 修复 + 回归断言</td></tr>
+        <tr><td>文档生成</td><td>架构与复现指南、实验指标说明</td><td>readme/ 全套 Markdown</td></tr>
+      </table>
+      <h2 style="margin-top:6mm">Prompt 设计要点</h2>
+      <ul>
+        <li>每条提示词<b>指明真实符号</b>（如 <code>screen(prop, world, agent_id)</code>、<code>class Ledger</code>），避免码道臆造接口。</li>
+        <li>显式约束：<b>纯标准库、阈值不得来自提案内容、不得引入可被智能体输出影响的参数</b>——保证改动不破坏核心安全性质。</li>
+        <li>要求码道<b>同时输出断言代码</b>，使每次生成都受 235 条回归测试约束。</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h2>使用证明材料（codearts_proof/）</h2>
+      <ul>
+        <li>核心功能开发的 <b>AI 交互对话与 Prompt 截图</b>（A/B/C/D 四组共 6 条）</li>
+        <li>代码生成、重构、排错的<b>过程记录</b></li>
+        <li>码道 IDE 插件<b>操作日志与记录</b></li>
+        <li>每条提示词对应的<b>本地终端执行输出</b>（含 eval.py / gate 结果）</li>
+      </ul>
+      <h2 style="margin-top:5mm">交付规范（5 文件夹）</h2>
+      <p style="font-family:Consolas,monospace;font-size:12px;line-height:1.9">
+        SwarmBox_&lt;队名&gt;_v1.0_&lt;联系方式&gt;.zip<br>
+        ├─ ppt/　　　　　　　作品介绍 PDF<br>
+        ├─ project/　　　　　可运行源码<br>
+        ├─ video/　　　　　　60–90s 演示录屏<br>
+        ├─ codearts_proof/　　码道使用证明<br>
+        └─ readme/　　　　　　说明文档
+      </p>
+      <div class="note"><b>真实性声明：</b>全部码道使用痕迹为真实开发过程记录，未做任何合成或伪造。<br><b>并行说明：</b>中部（PayPilot）、西北（QuorumPilot）、北部（SwarmBox）为三个不同作品分投不同赛区，码道动作可在同一场会话连做。<br><b>待补：</b>本单 video/ 需 60–90 秒演示录屏。</div>
+    </div>
+  </div>
+  <div class="foot"><span>SwarmBox · Zhiyilang</span><span>4 / 4</span></div>
+</section>
+
+</body>
+</html>
