@@ -144,6 +144,28 @@ Yilang Zhi / Shanghai, China / online global sprint / solo / Track 1，请官方
 Recommended Report Structure 逐节排版，全部必需字段齐备。若用户能打开模板，可把
 `REPORT.md` 内容粘进模板导出 PDF；否则直接交当前 PDF（结构合规，不是模板皮）。
 
+## 六、自动化投递（2026-11-05 21:5x 设置，理论零用户动作）
+
+| 项 | 值 |
+|---|---|
+| Automation ID | `54bb3c9f-ae36-4d2f-9a4b-6b418d994743`（由原「提交截止闸门」升级复用，未新建重复任务） |
+| 首次运行 | **2026-11-06 17:00（京）**，之后每天 17:00 幂等复检至 11-09（末次距截止 19:59 尚有 3h） |
+| 规则 | `FREQ=DAILY;BYHOUR=17;BYMINUTE=0`；validFrom 11-06 / validUntil 11-09 |
+
+执行链（两个脚本均已写好并通过 dry-run / smoke 实测）：
+
+1. `python _apart_submit.py --check` —— 已提交则立即停手（PDF 不可替换）。
+2. `cd swarmbox && python weekend_increment.py --full` —— **合规时间闸门**：11-06 00:00 前 ABORT（11-05 21:5x 实测 rc=2、报告未被改动），杜绝伪造周末数据；通过后实跑 5/8/12/16/20 agents × 8 seeds 规模扫描 → `WEEKEND_RESULTS.json` → 插入 `REPORT.md` 的 Appendix C → 重建 PDF → 同步 GitHub/Gitee。
+3. `python eval.py` + `python _apart_submit.py --dry-run` 终检（235/0、LIVE 令牌、222 词、19 字段、Submit project 按钮）。
+4. `python _apart_submit.py --submit` —— 实时抓 Next.js Server Action 令牌，向官网表单 POST 一次；标记写 `.workbuddy/swarm_submit_attempted.json`，响应存 `.workbuddy/swarm_submit_response_*.html`。
+5. `python _apart_submit.py --verify` —— 确认邮件 / 官网收录回验；失败**不重发 POST**，改推手动清单给用户。
+
+表单实测（2026-11-05）：`multipart/form-data` POST 到 Sprint 页自身，**无登录、无验证码**，唯一 bot 闸门 `leave_blank` 留空；字段 19 个（注意 `ProjectSummary_Framer ` 带尾随空格）；4 个隐藏令牌必须实时抓取，提交时禁用缓存。
+
+⚠️ **诚实边界**：因「PDF 交了不能替换」，不能为了测试而提前真提交，所以**直连 POST 尚未经过一次真实成功验证**（dry-run 只构造不发送）。若到点 POST 返回 failed，脚本允许后续每日重试（官方 FAQ：同标题重交会更新记录，不创建重复项目）；若 11-09 仍失败，自动化会把手动清单推到本文件顶部并告知用户，届时仍需用户 3 分钟点一下。
+
+**手动兜底清单（约 3 分钟）**：Apart Sprint 页 → Submit your project → 上传 `REPORT.pdf` → 粘第二节 222 词摘要 → 选 Track 1 → Yes publishing → Team `SwarmBox` / Location `Shanghai, China` / Name `Yilang Zhi` / Email `2383844705@qq.com` / Project code `https://github.com/Zhiyilang/swarmbox` → Submit project。提交后应收到确认邮件，项目 5 分钟内上官网。
+
 ---
 
 > 官方规则源：aialignmentfoundation.org/hackathons/swarm-alignment-2026（2026-11-05 实抓：奖池 $4,000 明细 1st $2,000 / 2nd $1,000 / 3rd $600 / 4–5th $200；solo 可；"Global submissions due 23:59 AoE"）· apartresearch.com/sprints/swarm-alignment-2026#guidelines（2026-11-05 实抓：Submission Requirements / Recommended Report Structure / Important Notes / FAQ 全文）· 官方注册确认邮件 UID 1150（2026-11-05 13:04 UTC）
