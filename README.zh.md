@@ -107,6 +107,18 @@ python -m swarmbox fidelity
   的路径，而不是因为它扛得住运行时的蓄意攻击。
 * **合谋检测基于相关性。** 它能抓到轮流式合谋，抓不到更精巧的合谋。
 
+## 赛前代码声明（Pre-existing work）
+
+本仓库全部核心代码（`gate.py`、`world.py`、`agents.py`、`swarm.py`、`ledger.py`、
+`metrics.py`、`fidelity.py`、`probe.py`）、235 条断言的测试套件与 32 项逃逸语料，
+均写于 **2026 年 10 月 20–31 日**，早于 11 月 6–8 日的 Swarm Alignment
+Hackathon。按 Apart Research 提交规范原文 *"Mark any code you wrote before the
+sprint as preexisting in the README and the report"*，这些代码明确标注为
+**赛前已有（pre-existing）**，不作为周末成果申报。本次参赛新增的是研究报告
+（`REPORT.md` / `REPORT.pdf`：含摘要、必需的 Limitations and Dual-Use /
+Ethical Considerations 附录），以及对全部引用数字的一次独立复跑复核。详见
+`REPORT.md` 附录 B。
+
 ## 许可
 
 MIT，见 [LICENSE](LICENSE)。
