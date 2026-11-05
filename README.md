@@ -1,5 +1,13 @@
 # SwarmBox
 
+**Swarm Alignment Hackathon 2026 — Track 1 Submission**
+[![Hackathon](https://img.shields.io/badge/hackathon-Swarm%20Alignment%202026-blue)](https://apartresearch.com/sprints/swarm-alignment-2026)
+[![Tests](https://github.com/Zhiyilang/swarmbox/actions/workflows/ci.yml/badge.svg)](https://github.com/Zhiyilang/swarmbox/actions)
+
+> An inescapable, reproducible multi-agent sandbox for studying coordination, collusion, and alignment in AI swarms.
+
+ SwarmBox
+
 **An inescapable, reproducible multi-agent testbed.**
 Built for the Swarm Alignment Hackathon 2026, Track 1 (Sandboxes & testbeds).
 
@@ -116,19 +124,3 @@ Things this project does **not** claim:
 ## License
 
 MIT. See [LICENSE](LICENSE).
-
----
-
-## 💝 赞助 / 打赏
-
-如果这个项目对你有帮助，欢迎通过 **爱发电** 请我喝杯咖啡 ☕  
-👉 https://afdian.com/a/Zhiyilang
-
-> GitHub Sponsors 在中国大陆暂不支持个人账号，赞助统一走爱发电。
-
----
-## 💝 赞助 / 支持
-如果这个项目对你有帮助，欢迎到 [爱发电](https://afdian.com/a/Zhiyilang) 请我喝杯咖啡 ☕
-你的支持是我持续维护开源、做更多实用工具的动力。
-
-。
