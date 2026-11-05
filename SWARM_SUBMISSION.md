@@ -2,8 +2,8 @@
 
 > **赛事**：Swarm Alignment Hackathon 2026 · Apart Research × AI Alignment Foundation × AE Studio
 > **官方页**：https://apartresearch.com/sprints/swarm-alignment-2026 ｜ https://www.aialignmentfoundation.org/hackathons/swarm-alignment-2026
-> **时间**：2026-11-06 ~ 11-08（线上 + LA 线下 hub）
-> **提交截止**：**Sunday, November 8, 2026, 11:59 PM AoE** → 换算北京 **11-09 19:59**（AoE=UTC−12）
+> **时间（2026-11-06 00:3x 京核定）**：官方赛期 Friday 6 – Sunday 8 November 2026，**AoE = UTC−12**；换算北京为 **11-06 20:00 ~ 11-09 19:59**。Apart 页当时倒计时仍显示 "Starts in 0 days 22 hrs 37 min"，即北京 11-06 零点**尚未开赛**。
+> **提交截止**：**Sunday, November 8, 2026, 11:59 PM AoE** → 北京 **11-09 19:59**
 > **奖金**：全球赛 **$4,000**；LA hub 另 $4,000（线上可投全球赛）｜所有参赛者另得 $500 Adaption 额度
 > **资格**：Free to join；**单人可报**（team 1–5）；官方页**无地域排除**；CoMSES  listings 显示 **Registration deadline: None**（报名无硬截止，但**必须在 Apart 页面注册才能提交并获奖**——Luma 页逐字："only teams registered there can submit and win prizes"）
 > **Track 官方原文（Track 1 · Sandboxes and Testbeds）**：*"Can you build a small, reproducible environment where 5–20 LLM agents acting for different principals share a resource, a market or a tool over many rounds, and log everything so another team can rerun it?"* —— 与 SwarmBox 设计逐字对应。
@@ -111,8 +111,7 @@ Yilang Zhi / Shanghai, China / online global sprint / solo / Track 1，请官方
 第二次表单提交、确认注册有效，并问清提交入口与是否还有遗漏的资格步骤。留档
 `.workbuddy/sent_mail/2026-11-05_swarm_registration_update.txt`。
 
-**🔴 唯一剩余的用户动作**：11-06 开赛后到 Apart Sprint 页点 **Submit your project**，
-上传 `REPORT.pdf`、粘贴上方摘要、选 Track 1。官方原文：
+**🟢 已无需用户动作**：报名已完成，交稿由自动化 `54bb3c9f` 于 **11-07 09:00（京）** 起自主执行（详见第六节）。下方表单仅作手动兜底留档。官方原文：
 
 > "Where to submit: through the official submission form on the Sprint page."
 
@@ -149,18 +148,33 @@ Recommended Report Structure 逐节排版，全部必需字段齐备。若用户
 | 项 | 值 |
 |---|---|
 | Automation ID | `54bb3c9f-ae36-4d2f-9a4b-6b418d994743`（由原「提交截止闸门」升级复用，未新建重复任务） |
-| 首次运行 | **2026-11-06 17:00（京）**，之后每天 17:00 幂等复检至 11-09（末次距截止 19:59 尚有 3h） |
-| 规则 | `FREQ=DAILY;BYHOUR=17;BYMINUTE=0`；validFrom 11-06 / validUntil 11-09 |
+| 首次运行 | **2026-11-07 09:00（京）**，之后每天 09:00 幂等复检至 11-09（末次距截止 19:59 尚有约 11h） |
+| 规则 | `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`；validFrom 11-07 / validUntil 11-09 |
+| 开赛口径 | 北京 2026-11-06 20:00 = AoE 11-06 00:00；**首次执行已落在赛期内**，不抢跑 |
 
 执行链（两个脚本均已写好并通过 dry-run / smoke 实测）：
 
 1. `python _apart_submit.py --check` —— 已提交则立即停手（PDF 不可替换）。
-2. `cd swarmbox && python weekend_increment.py --full` —— **合规时间闸门**：11-06 00:00 前 ABORT（11-05 21:5x 实测 rc=2、报告未被改动），杜绝伪造周末数据；通过后实跑 5/8/12/16/20 agents × 8 seeds 规模扫描 → `WEEKEND_RESULTS.json` → 插入 `REPORT.md` 的 Appendix C → 重建 PDF → 同步 GitHub/Gitee。
-3. `python eval.py` + `python _apart_submit.py --dry-run` 终检（235/0、LIVE 令牌、222 词、19 字段、Submit project 按钮）。
+2. `cd swarmbox && python weekend_increment.py --full` —— **合规时间闸门**：北京 11-06 20:00（= AoE 11-06 00:00）前 ABORT（11-06 00:41 实测 rc=2、报告一字节未改），杜绝把赛前数据写成「周末工作」；通过后实跑 5/8/12/16/20 agents × 8 seeds 规模扫描 → `WEEKEND_RESULTS.json` → 插入 `REPORT.md` 的 Appendix C → 重建 PDF → 同步 GitHub/Gitee。
+3. `python eval.py` + `python _apart_submit.py --dry-run` 终检（235/0、LIVE 令牌、222 词、19 字段、Submit project 按钮、**`Data check: SAFE`**）。
 4. `python _apart_submit.py --submit` —— 实时抓 Next.js Server Action 令牌，向官网表单 POST 一次；标记写 `.workbuddy/swarm_submit_attempted.json`，响应存 `.workbuddy/swarm_submit_response_*.html`。
 5. `python _apart_submit.py --verify` —— 确认邮件 / 官网收录回验；失败**不重发 POST**，改推手动清单给用户。
 
 表单实测（2026-11-05）：`multipart/form-data` POST 到 Sprint 页自身，**无登录、无验证码**，唯一 bot 闸门 `leave_blank` 留空；字段 19 个（注意 `ProjectSummary_Framer ` 带尾随空格）；4 个隐藏令牌必须实时抓取，提交时禁用缓存。
+
+### 时间口径订正与一次赛前数据事故（2026-11-06 00:3x–00:4x 京）
+
+初版把开赛当成「北京 11-06 00:00」，闸门和自动化分别设为 00:00 / 17:00。核官方页后确认赛期用 **AoE**，北京零点其实是 AoE 11-05，尚未开赛，抢跑约 20 小时。期间另一个进程在旧闸门下于 **00:35:46** 跑出了 `WEEKEND_RESULTS.json` 并写入本地 `REPORT.md` / `REPORT.pdf`，文中还声称 "Generated during the sprint window"。
+
+处置（全部有回验）：
+
+| 动作 | 结果 |
+|---|---|
+| 读双端公开仓库 | GitHub / Gitee 仍为干净的 17,818 B / 17,081 B，**未被污染**（该进程在 `validate()` 处抛异常退出，未执行同步） |
+| 本地回滚 | 从 GitHub raw 覆盖 `REPORT.md` / `REPORT.pdf`，逐字节一致；赛前数据隔离到 `.workbuddy/quarantine_weekend_results_0005.json`，不参与提交 |
+| 闸门订正 | 两个脚本 `SPRINT_START` 统一为北京 11-06 20:00；自动化改 11-07 09:00 首跑 |
+| 根因修复 | `appendix_c()` 漏了 `## Appendix C` 标题（上一轮改格式化时误删），导致 `validate()` 的 weekend appendix 检查必然 FAIL、自动化会永远卡在第二步；已补回标题，并给 `patch_report()` 加无标题残留兜底清理 |
+| 新增硬闸门 | `_apart_submit.py` 的 `report_data_is_sprint_safe()`：报告一旦声称周末工作，就校验 `WEEKEND_RESULTS.json` 的 `generated_at` 必须 ≥ 开赛时刻；否则 `--submit` 直接 ABORT。隔离测试 4/4 通过（干净版放行、赛前数据拦截、赛期内放行、缺结果文件拦截） |
 
 ⚠️ **诚实边界**：因「PDF 交了不能替换」，不能为了测试而提前真提交，所以**直连 POST 尚未经过一次真实成功验证**（dry-run 只构造不发送）。若到点 POST 返回 failed，脚本允许后续每日重试（官方 FAQ：同标题重交会更新记录，不创建重复项目）；若 11-09 仍失败，自动化会把手动清单推到本文件顶部并告知用户，届时仍需用户 3 分钟点一下。
 
