@@ -117,6 +117,7 @@ Yilang Zhi / Shanghai, China / online global sprint / solo / Track 1，请官方
 > "Where to submit: through the official submission form on the Sprint page."
 
 **不要再用邮件交作品**（Collusion Sprint 已有 Kamil 两次明示只认官网按钮的教训）。
+⚠️ **但别提前交**：官方 FAQ 逐字「The PDF itself is not replaced」——交了就不能改，且「only the weekend's work is judged」。建议 **11-06 开赛后**先补一个真实增量实验（新测量 / 新种子 / 新基线），写进报告独立「Weekend work」节、重建 PDF、双端同步后再一次性上传。当前 6 页 PDF 已满足全部硬性要求，若要立刻交也不会在资格上被卡。
 提交后应收到含 project title 的确认邮件，项目 5 分钟内出现在官网；没有则写
 `sprints@apartresearch.com`。Discord（官方确认邮件给的）：https://discord.gg/THWK7ZumW
 —— 加入不是获奖硬条件，已在信中请官方确认。
