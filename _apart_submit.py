@@ -349,9 +349,18 @@ def recent_mail_subjects(limit=40):
 
 
 def website_has_project():
+    """Only an actual project-listing link counts as evidence of submission.
+
+    A bare "SwarmBox" word in marketing copy / the schedule / a track
+    description must NOT be read as "already submitted" -- that would make
+    the daily automation silently skip the POST and lose the whole entry.
+    Verified 2026-11-06 02:2x against the live sprint page (NOT_SUBMITTED).
+    """
     try:
         s = _get(SPRINT_URL)
-        return TITLE.lower() in s.lower(), len(s)
+        listed = bool(re.search(r"/sprints/projects/[^\\\"'<>\\s]*" +
+                                re.escape(TITLE.lower()), s.lower()))
+        return listed, len(s)
     except Exception as e:
         return False, "%s: %s" % (type(e).__name__, str(e)[:120])
 
