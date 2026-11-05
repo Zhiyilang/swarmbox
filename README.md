@@ -1,13 +1,5 @@
 # SwarmBox
 
-**Swarm Alignment Hackathon 2026 — Track 1 Submission**
-[![Hackathon](https://img.shields.io/badge/hackathon-Swarm%20Alignment%202026-blue)](https://apartresearch.com/sprints/swarm-alignment-2026)
-[![Tests](https://github.com/Zhiyilang/swarmbox/actions/workflows/ci.yml/badge.svg)](https://github.com/Zhiyilang/swarmbox/actions)
-
-> An inescapable, reproducible multi-agent sandbox for studying coordination, collusion, and alignment in AI swarms.
-
- SwarmBox
-
 **An inescapable, reproducible multi-agent testbed.**
 Built for the Swarm Alignment Hackathon 2026, Track 1 (Sandboxes & testbeds).
 
@@ -30,7 +22,7 @@ say whether they cooperate, collude, or eat it empty.
 
 ```bash
 python eval.py              # 235 assertions, 0 failures (includes the attack corpus)
-python -m swarmbox gate     # 32 escape attempts, each refused with its rule id
+python -m swarmbox gate     # 32-item corpus: 31 refused with expected rule, 1 allowed, 0 escapes
 python -m swarmbox run      # one mixed swarm
 python -m swarmbox probe    # planted collusion pair, seen from the ledger only
 python -m swarmbox fidelity # cheap vs frontier, 8 seeds
@@ -120,6 +112,19 @@ Things this project does **not** claim:
   offers no path to the host, not because it withstands a determined runtime attack.
 * **Collusion detection here is correlation-based.** It catches turn-taking. It would
   not catch sophisticated collusion.
+
+## Pre-existing work (disclosure)
+
+All core code in this repository (`gate.py`, `world.py`, `agents.py`, `swarm.py`,
+`ledger.py`, `metrics.py`, `fidelity.py`, `probe.py`), the 235-assertion suite and
+the 32-item escape corpus were written between 20 and 31 October 2026, **before**
+the 6-8 November 2026 Swarm Alignment Hackathon. In line with the Apart Research
+guideline *"Mark any code you wrote before the sprint as preexisting in the README
+and the report"*, this code is explicitly marked **pre-existing** and is not
+presented as weekend work. The sprint submission contributes the research report
+(`REPORT.md` / `REPORT.pdf`, including its abstract and the required Limitations
+and Dual-Use / Ethical Considerations appendix) and a fresh independent
+re-verification of every quoted number. See Appendix B of `REPORT.md`.
 
 ## License
 
