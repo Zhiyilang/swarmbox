@@ -152,15 +152,39 @@ Recommended Report Structure 逐节排版，全部必需字段齐备。若用户
 | 规则 | `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`；validFrom 11-07 / validUntil 11-09 |
 | 开赛口径 | 北京 2026-11-06 20:00 = AoE 11-06 00:00；**首次执行已落在赛期内**，不抢跑 |
 
-执行链（两个脚本均已写好并通过 dry-run / smoke 实测）：
+执行链（两个脚本均已写好并通过 dry-run / 隔离断言实测）：
 
 1. `python _apart_submit.py --check` —— 已提交则立即停手（PDF 不可替换）。
 2. `cd swarmbox && python weekend_increment.py --full` —— **合规时间闸门**：北京 11-06 20:00（= AoE 11-06 00:00）前 ABORT（11-06 00:41 实测 rc=2、报告一字节未改），杜绝把赛前数据写成「周末工作」；通过后实跑 5/8/12/16/20 agents × 8 seeds 规模扫描 → `WEEKEND_RESULTS.json` → 插入 `REPORT.md` 的 Appendix C → 重建 PDF → 同步 GitHub/Gitee。
-3. `python eval.py` + `python _apart_submit.py --dry-run` 终检（235/0、LIVE 令牌、222 词、19 字段、Submit project 按钮、**`Data check: SAFE`**）。
-4. `python _apart_submit.py --submit` —— 实时抓 Next.js Server Action 令牌，向官网表单 POST 一次；标记写 `.workbuddy/swarm_submit_attempted.json`，响应存 `.workbuddy/swarm_submit_response_*.html`。
-5. `python _apart_submit.py --verify` —— 确认邮件 / 官网收录回验；失败**不重发 POST**，改推手动清单给用户。
+3. `python _apart_submit.py --probe` 探测官方上传闸门；GATE_OPEN 时可加跑 `--upload-only` 验证真实上传链路（只存 blob、不创建提交）。
+4. `python eval.py` + `python _apart_submit.py --dry-run` 终检（235/0、LIVE 令牌、222 词、20 字段、PDF File 为字符串且 ≤1000 字符、Submit project 按钮、**`Data check: SAFE`**）。
+5. `python _apart_submit.py --submit` —— 实时抓 Next.js Server Action 令牌 → 解析 PDF URL（主路径官方预签名上传 / 失败降级公开 raw URL）→ 向官网表单 POST 一次；标记写 `.workbuddy/swarm_submit_attempted.json`（含 `pdf_url`/`pdf_method`），响应存 `.workbuddy/swarm_submit_response_*.html`。
+6. `python _apart_submit.py --verify` —— 确认邮件 / 官网收录回验；失败**不重发 POST**，改推手动清单给用户。
 
-表单实测（2026-11-05）：`multipart/form-data` POST 到 Sprint 页自身，**无登录、无验证码**，唯一 bot 闸门 `leave_blank` 留空；字段 19 个（注意 `ProjectSummary_Framer ` 带尾随空格）；4 个隐藏令牌必须实时抓取，提交时禁用缓存。
+表单实测（2026-11-05 + 11-06 逆向 JS bundle）：`multipart/form-data` POST 到 Sprint 页自身，**无登录、无验证码**，唯一 bot 闸门 `leave_blank` 留空；4 个 `$ACTION_*` 隐藏令牌必须实时抓取（提交时禁用缓存）；字段 20 个（注意 `ProjectSummary_Framer ` 带尾随空格）；官方客户端还必带 `_ref`（6 位 Crockford base32）。
+
+### 🔴 关键修复：PDF 不是文件，是 URL 字符串（2026-11-06 02:0x 京）
+
+逆向官网 15 个首屏 JS bundle + 19 个 lazy chunk（合计 1.57 MB）后确认，**旧版 `_apart_submit.py` 会在 11-07 提交一个官方根本收不到 PDF 的请求**：
+
+| 证据 | 内容 |
+|---|---|
+| 页面 HTML | 三个 file input 全是 `disabled=""`，`<noscript>Uploading files needs JavaScript. Turn it on to send this form.</noscript>` |
+| RSC schema | 完整 40 字段定义：`PDF File` = `type:file`、`required:true`、`maxBytes:26214400` |
+| 客户端提交函数 `e3` | `a.set(l.key, n)` —— 上传后把 **blob URL 字符串**塞进 `PDF File`；另有 `a.set(u.REF_FIELD, n)` 必带 `_ref` |
+| 上传协议 | `POST /api/forms/upload`（`blob.generate-presigned-url`）→ `presignedUrlPayload{delegationToken,signature,params}` → PUT 到 `vercel.com/api/blob` → 返回 `url` |
+| 服务端校验 | `readValues()` 对每个字段做 `String(formData.get(key))`；`buildSchema()` 把 file 字段当普通字符串（`maxLength 1000`、`required min(1)`） |
+
+因此直连 POST 把 PDF 二进制塞成 multipart file part 是**错的**，服务端只会读到 `[object File]` 或空值。已重写为：
+
+- **主路径**：`upload_pdf_presigned()` 复现官方两段式上传，拿到 Vercel Blob 公开 URL；
+- **降级**：上传端点若仍关闭/异常，改用 `https://gitee.com/ZhiYIlang/swarmbox/raw/master/REPORT.pdf`（2026-11-06 实测 HTTP 200、17,081 B、与本地逐字节一致）——服务端只要求非空字符串 ≤1000 字符，评委可直接点开；
+- 所有字段（含 `PDF File`）均为普通字符串 part，补齐 `_ref`；
+- `PDF File` 字符串长度 >1000 时直接 ABORT，避免提交无效载荷。
+
+`/api/forms/upload` 赛前实测返回 `{"error":"form closed"}`（换不存在的 slug 结果相同 = 服务端时间闸门在参数校验之前）；`blob.generate-client-token` / 空 clientPayload 返回 400，反证 `blob.generate-presigned-url` 才是该站采用的协议。为此新增 `--probe`（零副作用探测闸门）与 `--upload-only`（只存孤立 blob、不提交），并设一次性自动化 `a264f129` 于 **京 11-06 20:15**（开赛后 15 分钟）提前验证真实 PUT 链路，比正式交稿早 13 小时。
+
+隔离断言 11/11 通过：无二进制 file part、`PDF File` 为纯字符串、`_ref` 6 位合法字符、honeypot 空、尾随空格字段保留、Track 1 / Yes 正确、4 个 ACTION 字段齐全、closing boundary 正确、字段数 = hidden+F+2。
 
 ### 时间口径订正与一次赛前数据事故（2026-11-06 00:3x–00:4x 京）
 
@@ -176,7 +200,7 @@ Recommended Report Structure 逐节排版，全部必需字段齐备。若用户
 | 根因修复 | `appendix_c()` 漏了 `## Appendix C` 标题（上一轮改格式化时误删），导致 `validate()` 的 weekend appendix 检查必然 FAIL、自动化会永远卡在第二步；已补回标题，并给 `patch_report()` 加无标题残留兜底清理 |
 | 新增硬闸门 | `_apart_submit.py` 的 `report_data_is_sprint_safe()`：报告一旦声称周末工作，就校验 `WEEKEND_RESULTS.json` 的 `generated_at` 必须 ≥ 开赛时刻；否则 `--submit` 直接 ABORT。隔离测试 4/4 通过（干净版放行、赛前数据拦截、赛期内放行、缺结果文件拦截） |
 
-⚠️ **诚实边界**：因「PDF 交了不能替换」，不能为了测试而提前真提交，所以**直连 POST 尚未经过一次真实成功验证**（dry-run 只构造不发送）。若到点 POST 返回 failed，脚本允许后续每日重试（官方 FAQ：同标题重交会更新记录，不创建重复项目）；若 11-09 仍失败，自动化会把手动清单推到本文件顶部并告知用户，届时仍需用户 3 分钟点一下。
+⚠️ **诚实边界**：因「PDF 交了不能替换」，不能为了测试而提前真提交，所以**完整提交 POST 尚未经过一次真实成功验证**（dry-run 只构造不发送，`--upload-only` 只验证上传链路）。若到点 POST 返回 failed，脚本允许后续每日重试（官方 FAQ：同标题重交会更新记录，不创建重复项目）；若 11-09 仍失败，自动化会把手动清单推到本文件顶部并告知用户，届时仍需用户 3 分钟点一下。
 
 **手动兜底清单（约 3 分钟）**：Apart Sprint 页 → Submit your project → 上传 `REPORT.pdf` → 粘第二节 222 词摘要 → 选 Track 1 → Yes publishing → Team `SwarmBox` / Location `Shanghai, China` / Name `Yilang Zhi` / Email `2383844705@qq.com` / Project code `https://github.com/Zhiyilang/swarmbox` → Submit project。提交后应收到确认邮件，项目 5 分钟内上官网。
 
