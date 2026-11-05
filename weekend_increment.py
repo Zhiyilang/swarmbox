@@ -29,7 +29,11 @@ import urllib.request
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.dirname(ROOT)
-SPRINT_START = dt.datetime(2026, 11, 6, 0, 0)   # Beijing local, conservative
+# Official sprint window is Friday 6 - Sunday 8 November 2026, AoE (UTC-12).
+# AoE 2026-11-06 00:00 == Beijing 2026-11-06 20:00. Nothing may be labelled
+# "weekend work" before that instant; the Apart page countdown on 2026-11-06
+# 00:32 Beijing still read "Starts in 0 days 22 hrs 37 min".
+SPRINT_START = dt.datetime(2026, 11, 6, 20, 0)   # Beijing local = AoE 11-06 00:00
 SIZES = (5, 8, 12, 16, 20)
 SEEDS = tuple(range(1, 9))
 REPORT_MD = os.path.join(ROOT, "REPORT.md")
@@ -48,7 +52,8 @@ def gate():
     if now < SPRINT_START:
         print("ABORT: sprint window has not started (now=%s, opens=%s)."
               % (now.isoformat(timespec="minutes"), SPRINT_START.isoformat()))
-        print("No weekend data was written. Re-run on or after 2026-11-06.")
+        print("No weekend data was written. Re-run on or after 2026-11-06 20:00 Beijing"
+              " (= AoE 11-06 00:00).")
         return False
     return True
 
@@ -100,8 +105,9 @@ def verdict(rows):
 
 def appendix_c(rows, when):
     lines = [
+        APPENDIX_C_HEAD,
         "",
-        "**Generated during the sprint window, %s (Beijing).** This appendix is new work "
+        "**Generated during the sprint window (AoE 6-8 November 2026), %s (Beijing).** This appendix is new work "
         "performed for the hackathon; the core code is pre-existing and is declared in "
         "Appendix B. Command: `python weekend_increment.py --full`. Raw measurements: "
         "`WEEKEND_RESULTS.json`." % when.strftime("%d %B %Y %H:%M"),
@@ -129,8 +135,12 @@ def appendix_c(rows, when):
 
 def patch_report(section, when):
     src = open(REPORT_MD, encoding="utf-8").read()
-    # idempotent: drop a previous Appendix C
+    # idempotent: drop a previous Appendix C. The second pattern also removes a
+    # headless leftover from a 00:35 Beijing pre-sprint run that failed
+    # validation before it could sync; such data must never reach the report.
     src = re.sub(r"\n" + re.escape(APPENDIX_C_HEAD) + r".*?(?=\n## References)",
+                 "", src, flags=re.S)
+    src = re.sub(r"\n\*\*Generated during the sprint window.*?(?=\n## References)",
                  "", src, flags=re.S)
     if "## References" not in src:
         raise RuntimeError("REPORT.md has no References heading")
