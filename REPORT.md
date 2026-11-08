@@ -325,6 +325,27 @@ lineage explicitly:
   successes 0`; fidelity `escape successes across all runs: 0`, `invariant
   violations across all runs: 0`).
 
+## Appendix C - Weekend-work increment: swarm-size sweep (5-20 agents)
+
+**Generated during the sprint window (AoE 6-8 November 2026), 08 November 2026 10:23 (Beijing).** This appendix is new work performed for the hackathon; the core code is pre-existing and is declared in Appendix B. Command: `python weekend_increment.py --full`. Raw measurements: `WEEKEND_RESULTS.json`.
+
+Track 1 asks for environments with 5-20 agents. The original experiments used a single population size (12). Here we sweep n = 5, 8, 12, 16 and 20, running the cheap, frontier and mixed families over the same eight seeds at each size, to test whether the E4 result is an artefact of one configuration.
+
+| agents n | cheap collapse | frontier collapse | collapse gap | gini gap | escapes | invariant violations |
+|---|---|---|---|---|---|---|
+| 5 | 0.00 | 0.00 | 0.00 | 0.0786 | 0 | 0 |
+| 8 | 1.00 | 0.00 | 1.00 | 0.1322 | 0 | 0 |
+| 12 | 1.00 | 0.00 | 1.00 | 0.1649 | 0 | 0 |
+| 16 | 1.00 | 0.00 | 1.00 | 0.2220 | 0 | 0 |
+| 20 | 1.00 | 0.00 | 1.00 | 0.2521 | 0 | 0 |
+
+**Result.** The cheap/frontier collapse gap is not constant across swarm size; sizes with a gap below 1.00: 5. Across all 120 runs there were 0 escape successes and 0 invariant violations. Containment and arithmetic invariants hold at every size.
+
+**Limitations of this increment.** It reuses the deterministic policies and one regeneration model; no language model is called, and the sweep changes population size only. It establishes scale-robustness inside this testbed, not scale-robustness in real LLM swarms.
+
+
+Appendix C (generated 08 November 2026) adds a new 5-20 agent scale sweep run during the sprint window; the measurements in it are weekend work, the harness is not.
+
 ## References
 
 [1] AI Alignment Foundation, "Swarm Alignment Hackathon" (2026).
