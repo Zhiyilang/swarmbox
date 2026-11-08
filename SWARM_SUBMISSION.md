@@ -10,6 +10,23 @@
 
 ---
 
+## ✅ 2026-11-08 10:34 京 · 已正式提交，勿再操作
+
+> 本文件以下内容为 **11-05/11-06 赛前备战留档**，其中「别提前交」「开赛后补增量」等措辞**已全部执行完毕、不再生效**。
+
+| 项 | 实测结果 |
+|---|---|
+| 提交 | `_apart_submit.py --submit` 只 POST 一次，`http_status=200`，跳转 `/success-submission?sprint=swarm-alignment-2026`，响应 `<title>Project submitted \| Apart Research` |
+| 报告 | `REPORT.pdf` 18,418 B / 6 页 / 222 词 / Appendix A+B+**C 真实周末增量**+References；`validate()` 9/9 |
+| PDF 投递 | **presigned-upload** 到官方 Vercel Blob（非降级链接）；官方确认邮件附件与本地**逐字节一致**（sha16 `fba7071d835e0bfd`） |
+| 官方回执 | `sprints@apartresearch.com`「"SwarmBox" successfully submitted」10:34:49 京，逐字 "Your submission has been received successfully" |
+| 私有页 | https://apartresearch.com/sprints/projects/swarmbox-heh2f6a3kp （200，`SwarmBox \| Apart Research`） |
+| 状态 | `--verify`=**VERIFY_OK**、`--check`=**ALREADY_SUBMITTED**；marker `.workbuddy/swarm_submit_attempted.json` 已写 |
+| 官网未列出 | 官方明写「will not appear on the website until judging is finished and it has passed an infohazard check」= 正常，**不是提交失败** |
+| 后续 | 自动化 `54bb3c9f` / `7adf5b1c` 均已 **PAUSED**，**永不再次 POST**（官方：PDF 交后不可替换、"sending us a corrected file won't update your submission"）。等评审结果，预计 11-26 前。 |
+
+---
+
 ## 一、报名（Sign up）表单字段 — 复制即填
 
 入口：https://apartresearch.com/sprints/swarm-alignment-2026 → **Sign up**（约 3 分钟，免费）
