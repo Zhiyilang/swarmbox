@@ -1,0 +1,76 @@
+{
+  "generated_at": "2026-11-08T10:23:36",
+  "config": {
+    "sizes": [
+      5,
+      8,
+      12,
+      16,
+      20
+    ],
+    "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "command": "python weekend_increment.py --full"
+  },
+  "rows": [
+    {
+      "n": 5,
+      "seeds": 8,
+      "cheap_collapse_rate": 0.0,
+      "frontier_collapse_rate": 0.0,
+      "collapse_gap": 0.0,
+      "gini_gap": 0.078635,
+      "escape_successes": 0,
+      "invariant_violations": 0
+    },
+    {
+      "n": 8,
+      "seeds": 8,
+      "cheap_collapse_rate": 1.0,
+      "frontier_collapse_rate": 0.0,
+      "collapse_gap": 1.0,
+      "gini_gap": 0.132169,
+      "escape_successes": 0,
+      "invariant_violations": 0
+    },
+    {
+      "n": 12,
+      "seeds": 8,
+      "cheap_collapse_rate": 1.0,
+      "frontier_collapse_rate": 0.0,
+      "collapse_gap": 1.0,
+      "gini_gap": 0.164884,
+      "escape_successes": 0,
+      "invariant_violations": 0
+    },
+    {
+      "n": 16,
+      "seeds": 8,
+      "cheap_collapse_rate": 1.0,
+      "frontier_collapse_rate": 0.0,
+      "collapse_gap": 1.0,
+      "gini_gap": 0.221987,
+      "escape_successes": 0,
+      "invariant_violations": 0
+    },
+    {
+      "n": 20,
+      "seeds": 8,
+      "cheap_collapse_rate": 1.0,
+      "frontier_collapse_rate": 0.0,
+      "collapse_gap": 1.0,
+      "gini_gap": 0.252148,
+      "escape_successes": 0,
+      "invariant_violations": 0
+    }
+  ],
+  "verdict": "The cheap/frontier collapse gap is not constant across swarm size; sizes with a gap below 1.00: 5. Across all 120 runs there were 0 escape successes and 0 invariant violations. Containment and arithmetic invariants hold at every size."
+}
