@@ -7,8 +7,9 @@ AI x Epistemics Research Sprint, 13–15 November 2026
 > standards, so that records of what agents did and agreed can be audited and
 > trusted?**
 
-All numbers below come from `python3 eval.py` and `python3 eval_chain.py`.
-Nothing here is estimated, and the limits are stated rather than buried.
+All numbers below come from `python3 eval.py`, `python3 eval_chain.py` and
+`python3 sprint2026_anchor.py` (the last added 2026-11-14, inside the sprint
+window). Nothing here is estimated, and the limits are stated rather than buried.
 
 ---
 
@@ -58,6 +59,8 @@ Two design details turned out to matter more than expected:
 ## 3. What is tested
 
 `eval_chain.py` adds **35 assertions, 0 failures**, grouped as follows.
+`sprint2026_anchor.py` (added 2026-11-14, the sprint window) adds **7
+assertions, 0 failures** covering the external-anchor mechanism — see section 5.
 
 - **Backwards compatibility** — default runs carry no new fields; the whole-file
   digest is still a sha256.
@@ -73,7 +76,7 @@ Two design details turned out to matter more than expected:
 - **Round trip** — chained receipts written to disk read back and verify against
   their anchor.
 
-Total for the repository: **270 assertions, 0 failures**.
+Total for the repository: **277 assertions, 0 failures** (235 + 35 + 7).
 
 ## 4. The boundary we did not paper over
 
@@ -91,7 +94,39 @@ footnote — `verify_chain(rows)` passes on truncated input, while
 behaviours are asserted, so the limitation cannot silently regress into a false
 sense of security.
 
-## 5. Limitations — read these before citing us
+## 5. Sprint addition (2026-11-14, in window): the anchor, implemented
+
+Section 4 states the gap — a hash chain cannot see a silent tail truncation.
+During this sprint we turned that footnote into running code and tests. The new
+module `sprint2026_anchor.py` (added 2026-11-14) implements the external anchor
+and asserts the attacks it defeats:
+
+- **Publish the anchor.** The tail digest (`summarise(rows)["tail"]`) is written
+  to an *external* registry the reader fetches on their own — simulated here as a
+  separate store with its own `source` tag, never colocated with the log.
+- **Clean handoff verifies** against the published anchor (pass).
+- **Truncation is caught** — drop the last 3 records and `verify_chain(...,
+  expected_tail=anchor)` fails with a distinct *"tail digest does not match the
+  anchor"* reason.
+- **The gap is still real without the anchor** — the *same* truncated log verifies
+  fine when no anchor is supplied. This is asserted too, so the report does not
+  quietly overclaim; the anchor is the only thing that closes the gap.
+- **Forged append** — an attacker appends a record with a *valid internal* hash
+  (chained from the last anchored row) *after* the anchored tail. The in-log
+  chain still links, but the recomputed tail no longer equals the anchor, so it
+  is caught. This is the realistic "I added a benign-looking line after shipping"
+  attack, and it is exactly what a slogan of "we hash-chained it" would miss.
+- **Tampered anchor** — a wrong digest in the registry is rejected by an honest
+  reader, proving the anchor itself is part of what must be trusted.
+- **Independent-reader audit** and **determinism** (identical logs → identical
+  anchor) round out the suite.
+
+New assertions: **7 passed, 0 failed**. The mechanism is 38 lines, standard
+library only, offline, deterministic — same discipline as the rest of the
+project, and directly answers Track 2's prompt about what minimal
+tamper-evident layer is *missing* from today's observability standards.
+
+## 6. Limitations — read these before citing us
 
 - **Integrity, not authenticity.** Anyone holding the log can re-chain it into a
   self-consistent fake. A chained log proves nothing about authorship without a
@@ -107,11 +142,35 @@ sense of security.
   run this against a production agent framework, and "trust infrastructure"
   claims should survive contact with one before anyone depends on them.
 
-## 6. Reproduce
+## 7. Dual-Use / Ethical Considerations
+
+A tamper-evident ledger is a double-edged instrument, and we state the edges.
+
+- **Forgery, made easier to ship.** Because the layer is signature-free, anyone
+  who holds a log can re-chain it into a self-consistent fake. We do *not* make
+  forgery harder; we make *detection of post-hoc edits to a log you already
+  trusted* cheaper. The danger is that a team treats "chained" as "proven" and
+  leans on it for accountability it cannot provide. Our report names this
+  explicitly (section 6) rather than letting the framing imply authenticity.
+- **Surveillance via audit trails.** Fine-grained, tamper-evident agent logs make
+  it cheap to reconstruct *who decided what*, which is useful for safety and
+  incident review but also for workplace surveillance. The layer should audit
+  actions, not justify monitoring people without consent or due process.
+- **False confidence in high-stakes settings.** Presenting this as "trust
+  infrastructure" near real financial or safety systems, before it has met a
+  production agent framework, is the misuse we most want to pre-empt. The
+  "small evidence base" limitation (section 6) is the guardrail against that.
+- **What we recommend.** Anchor digests in a write-once location independent of
+  the log; pair the layer with real authentication where authorship matters; and
+  treat a passing verification as "this file is byte-stable since the anchor was
+  set", never as "this content is true".
+
+## 8. Reproduce
 
 ```bash
-python3 eval.py          # 235 passed, 0 failed  (unchanged, no regression)
-python3 eval_chain.py    #  35 passed, 0 failed  (the tamper-evident layer)
+python3 eval.py             # 235 passed, 0 failed  (unchanged, no regression)
+python3 eval_chain.py       #  35 passed, 0 failed  (the tamper-evident layer)
+python3 sprint2026_anchor.py#   7 passed, 0 failed  (2026-11-14 anchor work)
 ```
 
 To produce and verify a chained ledger yourself:
@@ -134,7 +193,7 @@ PY
 
 Expected: the clean log verifies; the edited one fails at the index you touched.
 
-## 7. Lineage
+## 9. Lineage
 
 This is an increment on `swarmbox`, a Track 1 testbed built for the earlier
 Swarm Alignment Hackathon. That project's contribution was making refusal
